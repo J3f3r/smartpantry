@@ -1,0 +1,836 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SmartPantry: manual de uso</title><style>
+body{font:16px/1.6 "Segoe UI",system-ui,sans-serif;color:#2a1f16;max-width:960px;margin:0 auto;padding:28px 18px 60px;background:#fff}
+h1{color:#c2570a;border-bottom:3px solid #ff8a1f;padding-bottom:8px}h2{color:#c2570a;margin-top:2.2em;border-bottom:1px solid #f0d9c4;padding-bottom:4px}h3{color:#8a3d05;margin-top:1.6em}
+.tw{overflow-x:auto;margin:14px 0}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border:1px solid #e6cdb4;padding:7px 10px;text-align:left;vertical-align:top}th{background:#fff0e0}tr:nth-child(even) td{background:#fffaf5}
+code{background:#fff0e0;border-radius:4px;padding:1px 5px;font-size:.9em}li{margin:3px 0}
+@media print{body{padding:0;max-width:none}h2{page-break-after:avoid}tr{page-break-inside:avoid}}
+</style></head><body><h1>SmartPantry: manual de uso e comportamento esperado</h1>
+<p><strong>Versão 3, atualizada após a correção dos defeitos encontrados nos testes.</strong> Este manual descreve o comportamento observado do arquivo <code>index.html</code>, com entradas corretas, entradas incorretas, saídas esperadas e comportamento em falhas.</p>
+<h2>0. Resultado da verificação (versão 3)</h2>
+<p>Abri o <code>index.html</code> no Chromium (via Playwright) e executei 312 verificações automatizadas, cobrindo o roteiro de 10 passos, todas as funcionalidades descritas abaixo e o reteste dos defeitos corrigidos. <strong>Todas passaram.</strong> Esses testes foram feitos fora do app e não fazem parte da entrega.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Resultado</th>
+<th>Detalhe</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Verificações aprovadas</td>
+<td>312 de 312</td>
+</tr>
+<tr>
+<td>Defeitos corrigidos nesta versão</td>
+<td>16 (DEF-02 a DEF-17). Dois deles apareceram na revisão visual depois das primeiras correções: títulos de seção que quebravam no meio da palavra no celular (&quot;Paine / l&quot;), causado por uma das correções, e o aviso estreito. O DEF-01, semana em 7 colunas no desktop, já estava corrigido na versão 2.</td>
+</tr>
+<tr>
+<td>Erros de JavaScript no console</td>
+<td>Nenhum</td>
+</tr>
+</tbody></table></div>
+<p><strong>O que mudou no comportamento desde a versão 2</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Área</th>
+<th>Antes</th>
+<th>Agora</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Gerar lista com item manual igual</td>
+<td>Somava a necessidade a cada clique (6, 10, 14)</td>
+<td>Resultado repetível (6, 6, 6)</td>
+</tr>
+<tr>
+<td>Quantidade somada a um item gerado</td>
+<td>Perdida ao gerar de novo</td>
+<td>Preservada</td>
+</tr>
+<tr>
+<td>Item gerado e já marcado como comprado</td>
+<td>Surgia nova linha pendente</td>
+<td>Cobre a necessidade; não surge nova linha</td>
+</tr>
+<tr>
+<td>Renomear item gerado</td>
+<td>O renomeado sumia ao gerar de novo</td>
+<td>Vira item manual; o original é criado à parte</td>
+</tr>
+<tr>
+<td>Duas abas abertas</td>
+<td>A última gravação apagava a outra</td>
+<td>Abas se sincronizam; gravação conflitante é bloqueada com aviso</td>
+</tr>
+<tr>
+<td>Dados salvos com tipo inválido</td>
+<td>Tela principal em branco</td>
+<td>Campos inválidos descartados; tela de recuperação como último recurso</td>
+</tr>
+<tr>
+<td>Ingredientes</td>
+<td>Frações, plurais, &quot;un.&quot; e &quot;de&quot; mal lidos</td>
+<td>Reconhecidos (ver 4.2)</td>
+</tr>
+<tr>
+<td>Nomes (despensa e lista)</td>
+<td>Comparação exata (ovo ≠ ovos)</td>
+<td>Sem acento, maiúsculas e plural simples</td>
+</tr>
+<tr>
+<td>Texto longo sem espaços</td>
+<td>Estourava o layout</td>
+<td>Quebra de linha; nomes limitados a 80 caracteres</td>
+</tr>
+<tr>
+<td>Foco e Esc em formulários</td>
+<td>Foco escapava e Esc falhava fora da janela</td>
+<td>Página de fundo inativa, Tab fica na janela, Esc sempre fecha, foco volta ao botão de origem</td>
+</tr>
+<tr>
+<td>Botões repetidos</td>
+<td>Sem contexto (28 &quot;+ Add&quot; iguais)</td>
+<td>Rótulo com dia e refeição ou nome do item</td>
+</tr>
+<tr>
+<td>Virada do dia com app aberto</td>
+<td>Painel desatualizado</td>
+<td>Atualiza em até 1 minuto</td>
+</tr>
+<tr>
+<td>Favorita renomeada</td>
+<td>Dois modelos</td>
+<td>Um único modelo</td>
+</tr>
+<tr>
+<td>Celular</td>
+<td>Cabeçalho de 205 px; Salvar fora da tela</td>
+<td>Cabeçalho de 87 px (12%); menu em uma linha; Salvar sempre visível</td>
+</tr>
+<tr>
+<td>Valores em reais</td>
+<td>Aceitava 3 ou mais casas</td>
+<td>Arredondados para centavos</td>
+</tr>
+<tr>
+<td>Aviso na tela do celular</td>
+<td>Metade da largura, 3 linhas</td>
+<td>Largura da tela, até 2 linhas</td>
+</tr>
+<tr>
+<td>Plural</td>
+<td>&quot;1 itens&quot;, &quot;1 registros&quot;, &quot;1 compras&quot;</td>
+<td>&quot;1 item&quot;, &quot;1 registro&quot;, &quot;1 compra&quot;</td>
+</tr>
+</tbody></table></div>
+<p><strong>O que não foi possível verificar:</strong> a exibição visual real de notificações do sistema (usei um substituto que registra as chamadas), outros navegadores (Firefox e Safari), toque em aparelhos reais e a digitação de vírgula em campos numéricos (a automação só digita ponto).</p>
+<h2>1. Conceitos gerais</h2>
+<p><strong>Onde ficam os dados.</strong> Tudo é salvo no <code>localStorage</code> do navegador, na chave <code>smartpantry.v1</code>. Não há nuvem, backup automático nem sincronização entre aparelhos ou navegadores. Limpar os dados do navegador apaga tudo.</p>
+<p><strong>Navegação.</strong> A barra superior tem seis abas: Painel, Planejador, Compras, Despensa, Orçamento e Lembretes. A aba atual fica destacada.</p>
+<p><strong>Formulários.</strong> Todo cadastro abre uma janela (modal) com Salvar e Cancelar. A tecla Esc também fecha sem salvar. Campos com asterisco (*) são obrigatórios. O foco inicial vai para o primeiro campo. Enquanto a janela está aberta, o restante da página fica inativo, Tab circula só dentro da janela, Esc sempre fecha e, ao fechar, o foco volta ao botão de origem. Campos de texto aceitam até 80 caracteres e as áreas de texto até 2000.</p>
+<p><strong>Regras de validação comuns</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Entrada</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Campo obrigatório vazio</td>
+<td>Nome em branco</td>
+<td>Mensagem em vermelho dentro da janela: <code>Preencha: Nome.</code> O foco vai para o campo e nada é salvo.</td>
+</tr>
+<tr>
+<td>Número negativo</td>
+<td>Custo estimado: -5</td>
+<td><code>Custo estimado (R$) deve ser um número maior ou igual a zero.</code></td>
+</tr>
+<tr>
+<td>Número opcional vazio</td>
+<td>Custo em branco</td>
+<td>Salva normalmente e o valor vira 0 (R$ 0,00).</td>
+</tr>
+<tr>
+<td>Texto em campo numérico</td>
+<td>Letras em Quantidade</td>
+<td>A maioria dos navegadores impede a digitação. Se o campo ficar vazio, vale a regra de campo vazio.</td>
+</tr>
+<tr>
+<td>Sucesso</td>
+<td>Qualquer formulário válido</td>
+<td>A janela fecha, a tela atualiza e uma confirmação curta aparece embaixo (ex.: <code>Refeição salva.</code>).</td>
+</tr>
+</tbody></table></div>
+<p><strong>Valores em reais.</strong> Em navegadores em português, digite 12,50 com vírgula. Em navegadores de outro idioma, o campo pode exigir ponto (12.50). A exibição é sempre R$ 12,50. Valores em reais são arredondados para centavos (1.005 vira 1,00) e quantidades para 3 casas decimais.</p>
+<p><strong>Datas.</strong> Exibidas como dd/mm/aaaa.</p>
+<p><strong>Confirmações.</strong> Pedem confirmação: excluir refeição (<code>Excluir esta refeição?</code>), remover item da lista (<code>Remover este item?</code>), excluir alimento da despensa (<code>Excluir este alimento da despensa?</code>) e remover dados demonstrativos (<code>Remover todos os dados demonstrativos?</code>). Cancelar não altera nada. Não há desfazer. Não pedem confirmação: marcar item como comprado, favoritar, copiar refeição e registrar consumo.</p>
+<h2>2. Fluxo recomendado para começar</h2>
+<ol>
+<li>Na aba Lembretes, clique em Carregar para ver o app com dados de exemplo (opcional).</li>
+<li>Cadastre alimentos na Despensa, com quantidade e validade.</li>
+<li>Planeje refeições no Planejador, informando ingredientes.</li>
+<li>Na aba Compras, clique em Gerar do planejamento (7 dias).</li>
+<li>Ajuste preços, marque o que comprou e clique em Concluir e arquivar.</li>
+<li>Defina o orçamento na aba Orçamento para acompanhar o saldo.</li>
+</ol>
+<h2>3. Painel</h2>
+<p>Somente leitura, exceto pelos atalhos.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Bloco</th>
+<th>O que mostra</th>
+<th>Exemplo de saída</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Refeições</td>
+<td>Hoje e os 3 dias seguintes (4 dias no total), ordenadas por data e depois por refeição (café, almoço, lanche, jantar). Dias passados e o 5º dia não aparecem.</td>
+<td>Arroz, feijão e frango grelhado · Almoço · 20/10/2026 · 45 min · R$ 14,00</td>
+</tr>
+<tr>
+<td>Perto do vencimento</td>
+<td>Alimentos vencidos ou que vencem em até 3 dias.</td>
+<td>leite · 1 L · Vencido há 1d; iogurte · 2 un · Vence em 1d</td>
+</tr>
+<tr>
+<td>Orçamento</td>
+<td>Orçamento menos o pago no período menos a estimativa da lista atual.</td>
+<td>R$ 94,50 disponível de R$ 300,00</td>
+</tr>
+<tr>
+<td>Lista de compras</td>
+<td>Itens não marcados como comprados e a estimativa total da lista.</td>
+<td>2 itens pendentes · estimativa R$ 22,00 (com 1: 1 item pendente)</td>
+</tr>
+</tbody></table></div>
+<p><strong>Atalhos:</strong> + Refeição, + Alimento e + Item de compra abrem os mesmos formulários das outras abas.</p>
+<p><strong>Casos vazios:</strong> <code>Nada planejado. Use “+ Refeição”.</code>, <code>Nenhum alimento perto de vencer.</code> e, sem orçamento, um traço (—) com a orientação para definir na aba Orçamento.</p>
+<h2>4. Planejador semanal</h2>
+<p>Mostra 7 dias, começando em hoje (não na segunda-feira). Anterior, Hoje e Próxima movem a janela de 7 em 7 dias. O dia atual tem borda laranja. Cada dia tem quatro faixas: Café da manhã, Almoço, Lanche e Jantar.</p>
+<p><strong>Layout:</strong> em telas a partir de 1100 px, os 7 dias aparecem em uma linha. Em telas menores, os dias se reorganizam em 5, 4 ou menos colunas, e no celular ficam empilhados. Não há rolagem horizontal, nem com nomes longos.</p>
+<h3>4.1 Cadastrar refeição</h3>
+<p>Botão + Add na faixa desejada (data e refeição já vêm preenchidas) ou + Refeição no Painel (data padrão: hoje).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Obrigatório</th>
+<th>Observação</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nome</td>
+<td>Sim</td>
+<td>Texto livre.</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>Sim</td>
+<td>Datas passadas são aceitas.</td>
+</tr>
+<tr>
+<td>Refeição</td>
+<td>Sim</td>
+<td>Café da manhã, Almoço, Lanche ou Jantar.</td>
+</tr>
+<tr>
+<td>Ingredientes</td>
+<td>Não</td>
+<td>Um por linha: quantidade, unidade e nome.</td>
+</tr>
+<tr>
+<td>Modo de preparo</td>
+<td>Não</td>
+<td>Aparece num bloco Preparo, que abre ao clicar.</td>
+</tr>
+<tr>
+<td>Custo estimado (R$)</td>
+<td>Não</td>
+<td>Vazio vira R$ 0,00.</td>
+</tr>
+<tr>
+<td>Tempo de preparo (min)</td>
+<td>Não</td>
+<td>Vazio vira 0 min.</td>
+</tr>
+<tr>
+<td>Favorita</td>
+<td>Não</td>
+<td>Sim salva um modelo para reutilizar.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Saída no cartão:</strong> nome e uma linha como <code>30 min · R$ 12,50 · 1/2 na despensa</code>. O trecho <code>1/2 na despensa</code> conta os ingredientes que existem na despensa (comparação pelo nome, sem diferenciar maiúsculas, acentos nem plural simples: ovo = ovos, maçã = maca, Tomate = tomate), com quantidade maior que zero e dentro da validade. Itens com quantidade 0 ou vencidos não contam. Itens sem validade contam.</p>
+<h3>4.2 Como os ingredientes são interpretados</h3>
+<p>Cada linha segue o padrão: número, unidade opcional, nome. O número pode ser decimal (1,5), fração (1/2), misto (1 1/2) ou símbolo (½ ¼ ¾). Unidades reconhecidas, no singular, no plural ou por extenso: kg (quilo), g (grama), ml, l (litro), un (un., unidade), pacote, caixa, dúzia, xícara, colher (maiúsculas e minúsculas são aceitas). A preposição &quot;de&quot; logo após a unidade é ignorada. Linhas em branco são ignoradas.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Linha digitada</th>
+<th>Resultado armazenado</th>
+<th>Comentário</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>500 g arroz</td>
+<td>500 g, arroz</td>
+<td>Formato ideal.</td>
+</tr>
+<tr>
+<td>250g farinha</td>
+<td>250 g, farinha</td>
+<td>Espaço entre número e unidade é opcional.</td>
+</tr>
+<tr>
+<td>1,5 kg batata</td>
+<td>1,5 kg, batata</td>
+<td>Vírgula decimal funciona.</td>
+</tr>
+<tr>
+<td>2 l leite</td>
+<td>2 L, leite</td>
+<td>Litro é guardado como L.</td>
+</tr>
+<tr>
+<td>2 KG feijão</td>
+<td>2 kg, feijão</td>
+<td>Unidade é normalizada para minúsculas.</td>
+</tr>
+<tr>
+<td>1 xícara açúcar</td>
+<td>1 xícara, açúcar</td>
+<td></td>
+</tr>
+<tr>
+<td>1/2 kg arroz</td>
+<td>0,5 kg, arroz</td>
+<td>Fração.</td>
+</tr>
+<tr>
+<td>1 1/2 xícara trigo</td>
+<td>1,5 xícara, trigo</td>
+<td>Número misto.</td>
+</tr>
+<tr>
+<td>½ xícara açúcar</td>
+<td>0,5 xícara, açúcar</td>
+<td>Símbolo de fração.</td>
+</tr>
+<tr>
+<td>2 colheres açúcar</td>
+<td>2 colher, açúcar</td>
+<td>Plural reconhecido (também xícaras, pacotes, dúzias).</td>
+</tr>
+<tr>
+<td>2 un. ovos</td>
+<td>2 un, ovos</td>
+<td>Abreviação com ponto.</td>
+</tr>
+<tr>
+<td>500g de arroz</td>
+<td>500 g, arroz</td>
+<td>A preposição &quot;de&quot; é descartada.</td>
+</tr>
+<tr>
+<td>2 ovos</td>
+<td>2 un, ovos</td>
+<td>Sem unidade reconhecida, assume un.</td>
+</tr>
+<tr>
+<td>3 gotas de limão</td>
+<td>3 un, gotas de limão</td>
+<td>A letra g de &quot;gotas&quot; não é confundida com a unidade g.</td>
+</tr>
+<tr>
+<td>sal a gosto</td>
+<td>1 un, sal a gosto</td>
+<td>Sem número no início, a linha inteira vira o nome, com 1 un.</td>
+</tr>
+<tr>
+<td>arroz 500 g</td>
+<td>1 un, arroz 500 g</td>
+<td>Atenção: o número precisa vir primeiro.</td>
+</tr>
+<tr>
+<td>2 litros leite</td>
+<td>2 L, leite</td>
+<td>Plurais e nomes por extenso são reconhecidos.</td>
+</tr>
+<tr>
+<td>1.000 g arroz</td>
+<td>1 g, arroz</td>
+<td>Atenção: o ponto é lido como decimal. Escreva 1000 g.</td>
+</tr>
+<tr>
+<td>0 g sal</td>
+<td>1 g, sal</td>
+<td>Quantidade zero é trocada por 1.</td>
+</tr>
+</tbody></table></div>
+<p>Ao editar a refeição, os ingredientes reaparecem já normalizados (ex.: <code>2 un ovos</code>).</p>
+<p><strong>Falha comum:</strong> unidades diferentes para o mesmo ingrediente (500 g e 1 kg de arroz) são tratadas como itens distintos. O app não converte unidades.</p>
+<h3>4.3 Editar, copiar, excluir e favoritar</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Ação</th>
+<th>Como</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Editar</td>
+<td>Botão Editar</td>
+<td>Formulário preenchido. Salvar atualiza (<code>Refeição salva.</code>).</td>
+</tr>
+<tr>
+<td>Copiar</td>
+<td>Botão Copiar</td>
+<td>Pede data (sugere o dia seguinte) e refeição. Cria cópia independente (<code>Refeição copiada.</code>). Editar a cópia não altera a original. <strong>A cópia herda a marca de favorita.</strong></td>
+</tr>
+<tr>
+<td>Excluir</td>
+<td>Botão Excluir</td>
+<td>Pergunta <code>Excluir esta refeição?</code>. Confirmar remove (<code>Refeição excluída.</code>). Cancelar não faz nada.</td>
+</tr>
+<tr>
+<td>Favoritar</td>
+<td>Botão da estrela</td>
+<td>Alterna ☆ e ★ (<code>Salva nas favoritas.</code> ou <code>Removida das favoritas.</code>).</td>
+</tr>
+<tr>
+<td>Reutilizar favorita</td>
+<td>Botão ★ Favoritas na faixa</td>
+<td>Escolha o modelo e clique em Adicionar. A refeição é criada naquele dia e faixa (<code>Favorita adicionada.</code>).</td>
+</tr>
+</tbody></table></div>
+<p><strong>Falha esperada:</strong> sem nenhuma favorita, ★ Favoritas mostra <code>Você ainda não tem favoritas. Marque uma refeição com ★.</code> e não abre janela.</p>
+<p><strong>Limitações das favoritas:</strong> os modelos são identificados pelo nome. Renomear uma refeição favorita atualiza o modelo (o nome antigo deixa de existir se nenhuma outra refeição favorita o usa). Se você excluir a refeição original, o modelo continua disponível e não há tela para removê-lo. Ele some se você favoritar/desfavoritar ou salvar com Favorita = Não outra refeição com exatamente o mesmo nome.</p>
+<h2>5. Listas de compras</h2>
+<p>Existe uma lista ativa por vez, criada automaticamente ao adicionar o primeiro item ou gerar a lista. O topo mostra a estimativa total, o valor já marcado e a quantidade de pendentes.</p>
+<h3>5.1 Adicionar item manualmente</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Obrigatório</th>
+<th>Exemplo válido</th>
+<th>Exemplo inválido e resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Produto</td>
+<td>Sim</td>
+<td>Café</td>
+<td>Vazio: <code>Preencha: Produto.</code></td>
+</tr>
+<tr>
+<td>Quantidade</td>
+<td>Sim</td>
+<td>500</td>
+<td>Vazio: <code>Preencha: Quantidade.</code> Negativo: <code>Quantidade deve ser um número maior ou igual a zero.</code> Zero é aceito.</td>
+</tr>
+<tr>
+<td>Unidade</td>
+<td>Sim (lista)</td>
+<td>g</td>
+<td>Não há valor inválido.</td>
+</tr>
+<tr>
+<td>Preço estimado total (R$)</td>
+<td>Não</td>
+<td>22,00</td>
+<td>Negativo: <code>Preço estimado total (R$) deve ser um número maior ou igual a zero.</code> Vazio: R$ 0,00.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Atenção:</strong> o preço é o valor total do item, não por unidade. Ex.: 5 kg de arroz por R$ 28,00 no total.</p>
+<p><strong>Combinação de duplicados:</strong> adicionar um produto com o mesmo nome (sem diferenciar maiúsculas, acentos nem plural simples) e a mesma unidade de um item pendente soma quantidade e preço.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Já na lista</th>
+<th>Você adiciona</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Arroz, 2 kg, R$ 10,00</td>
+<td>arroz, 3 kg, R$ 15,00</td>
+<td>Uma linha: Arroz, 5 kg, R$ 25,00.</td>
+</tr>
+<tr>
+<td>Arroz, 2 kg</td>
+<td>Arroz, 500 g</td>
+<td>Duas linhas (unidade diferente).</td>
+</tr>
+<tr>
+<td>Arroz, 2 kg (já comprado)</td>
+<td>Arroz, 1 kg</td>
+<td>Duas linhas (só itens pendentes são combinados).</td>
+</tr>
+</tbody></table></div>
+<h3>5.2 Gerar a lista a partir do planejamento</h3>
+<p>Botão Gerar do planejamento (7 dias). Considera refeições de hoje até 6 dias à frente (hoje, +1, ..., +6); refeições de ontem ou de daqui a 7 dias não entram. Para cada ingrediente (nome comparado sem acento, maiúsculas ou plural simples, e mesma unidade), o app soma as quantidades, desconta o que existe na despensa dentro da validade, desconta o que já está marcado como comprado na lista e adiciona só a diferença.</p>
+<p>Mensagem: <code>N item(ns) somado(s); M já coberto(s) (despensa ou comprados).</code> Exemplos: <code>1 item somado; 1 já coberto (despensa ou comprados).</code> e <code>0 itens somados; 0 já cobertos (despensa ou comprados).</code></p>
+<p><strong>Exemplo</strong></p>
+<ul>
+<li>Hoje, Almoço: 200 g arroz. Amanhã, Jantar: 300 g arroz e 4 un tomate.</li>
+<li>Despensa: arroz 1000 g (válido) e tomate 1 un (válido).</li>
+<li><strong>Saída:</strong> a lista recebe apenas 3 un de tomate. O arroz (500 g necessários) está coberto. Mensagem: <code>1 item somado; 1 já coberto (despensa ou comprados).</code></li>
+</ul>
+<p><strong>Exemplo com linha mal formatada (do roteiro):</strong> refeição com <code>500 g arroz</code>, <code>2 ovos</code> e <code>arroz 500 g</code>, despensa com arroz 1000 g. Saída: entram <code>ovos</code> (2 un) e <code>arroz 500 g</code> (1 un, pois o número não vem primeiro). O arroz não entra. Mensagem: <code>2 itens somados; 1 já coberto (despensa ou comprados).</code></p>
+<p><strong>Gerar é repetível.</strong> Cada linha guarda quanto veio do planejamento. Ao gerar de novo, essa parte é recalculada e o que você adicionou ou ajustou é mantido.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Cenário</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Item manual tomate 2 un e necessidade de 4 un; gerar 3 vezes</td>
+<td>6 un nas três vezes</td>
+</tr>
+<tr>
+<td>Gerado ovos 2 un; você soma + Item ovos 3 un (5 un); gerar de novo</td>
+<td>Continua 5 un</td>
+</tr>
+<tr>
+<td>Preço preenchido em item gerado; gerar de novo</td>
+<td>Preço mantido</td>
+</tr>
+<tr>
+<td>Aumentar a quantidade de um item gerado (3 para 10)</td>
+<td>10 mantido</td>
+</tr>
+<tr>
+<td>Reduzir abaixo do planejado (3 para 1)</td>
+<td>Volta a 3 (o planejamento é a base mínima)</td>
+</tr>
+<tr>
+<td>Renomear um item gerado</td>
+<td>Vira item manual; a geração cria o item original à parte</td>
+</tr>
+<tr>
+<td>Item gerado marcado como comprado</td>
+<td>Cobre a necessidade; não surge nova linha pendente</td>
+</tr>
+<tr>
+<td>Lista salva em versão anterior (sem o controle de origem)</td>
+<td>Tratada sem duplicar</td>
+</tr>
+<tr>
+<td>Item manual com mesmo nome e unidade de um item gerado</td>
+<td>Quantidades se somam (manual 2 + necessário 4 = 6)</td>
+</tr>
+</tbody></table></div>
+<p><strong>Casos de falha</strong></p>
+<ul>
+<li>Sem refeições na janela, ou refeições sem ingredientes: <code>0 itens somados; 0 já cobertos (despensa ou comprados).</code> e nada é adicionado.</li>
+<li>Unidade diferente da despensa (receita 1 kg, despensa 1000 g): sem conversão, o ingrediente entra inteiro na lista.</li>
+<li>Alimento vencido na despensa não é descontado.</li>
+</ul>
+<h3>5.3 Marcar como comprado, editar e remover</h3>
+<ul>
+<li>Caixa de seleção: marca ou desmarca como comprado (texto riscado, sai dos pendentes). Sem confirmação.</li>
+<li>Editar: abre o formulário preenchido, com as mesmas validações.</li>
+<li>Remover: pergunta <code>Remover este item?</code>. Só remove ao confirmar.</li>
+</ul>
+<h3>5.4 Concluir e arquivar</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Lista vazia (ou inexistente)</td>
+<td><code>A lista está vazia.</code> e nada acontece.</td>
+</tr>
+<tr>
+<td>Valor pago em branco</td>
+<td><code>Preencha: Valor efetivamente pago (R$).</code></td>
+</tr>
+<tr>
+<td>Valor pago 0</td>
+<td>Aceito.</td>
+</tr>
+<tr>
+<td>Há itens marcados como comprados</td>
+<td>Pergunta <code>Adicionar N itens comprados à despensa?</code> (no singular: <code>Adicionar 1 item comprado à despensa?</code>). Confirmar cria os itens na despensa com compra = hoje e sem validade; itens de mesmo nome e unidade sem validade são somados.</td>
+</tr>
+<tr>
+<td>Nenhum item marcado</td>
+<td>Nenhuma pergunta; nada vai para a despensa.</td>
+</tr>
+<tr>
+<td>Sucesso</td>
+<td><code>Lista arquivada.</code> A lista ativa some; uma nova nasce ao adicionar o próximo item.</td>
+</tr>
+</tbody></table></div>
+<p>O nome da lista vem preenchido como <code>Lista de compras dd/mm/aaaa</code> e pode ser alterado. Itens não marcados ficam registrados na lista arquivada e não passam para a próxima lista; use Reutilizar para trazê-los.</p>
+<h3>5.5 Listas arquivadas e reutilização</h3>
+<p>Cada lista arquivada é um bloco expansível (nome, data, valor pago). Reutilizar esta lista copia todos os itens, desmarcados, para a lista atual (combinando duplicados), leva você à aba Compras e mostra <code>Itens adicionados à lista atual.</code> Compras avulsas (aba Orçamento) não têm itens: aparecem como <code>Sem itens (compra avulsa).</code> e sem botão Reutilizar.</p>
+<h2>6. Despensa</h2>
+<h3>6.1 Cadastrar e editar alimento</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Obrigatório</th>
+<th>Regras</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Alimento</td>
+<td>Sim</td>
+<td>Vazio: <code>Preencha: Alimento.</code></td>
+</tr>
+<tr>
+<td>Quantidade</td>
+<td>Sim</td>
+<td>Vazio: <code>Preencha: Quantidade.</code> Aceita 0 ou maior. Item com 0 fica listado, mas não conta como disponível.</td>
+</tr>
+<tr>
+<td>Unidade</td>
+<td>Sim (lista)</td>
+<td>un, kg, g, L, ml, pacote, caixa, dúzia, xícara, colher.</td>
+</tr>
+<tr>
+<td>Data da compra</td>
+<td>Não</td>
+<td>Padrão: hoje. Pode ficar em branco.</td>
+</tr>
+<tr>
+<td>Validade</td>
+<td>Não</td>
+<td>Em branco = Sem validade.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Validação específica:</strong> validade anterior à data de compra → <code>A validade não pode ser anterior à compra.</code> e não salva. Validade igual à compra é aceita.</p>
+<h3>6.2 Etiquetas de validade</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Etiqueta</th>
+<th>Cor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Antes de hoje</td>
+<td>Vencido há 3d</td>
+<td>Vermelho</td>
+</tr>
+<tr>
+<td>Hoje</td>
+<td>Vence hoje</td>
+<td>Laranja</td>
+</tr>
+<tr>
+<td>Em 1 a 3 dias</td>
+<td>Vence em 1d, 2d ou 3d</td>
+<td>Laranja</td>
+</tr>
+<tr>
+<td>4 dias ou mais</td>
+<td>Até dd/mm/aaaa</td>
+<td>Verde</td>
+</tr>
+<tr>
+<td>Sem data</td>
+<td>Sem validade</td>
+<td>Neutra</td>
+</tr>
+</tbody></table></div>
+<p>Ordenação: validade mais próxima primeiro; sem validade por último.</p>
+<h3>6.3 Consumir ou descartar</h3>
+<p>Botão Consumir/descartar. A quantidade sugerida é o total disponível.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Entrada (despensa tem 6 un)</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Consumido, 2</td>
+<td>Fica 4 un. <code>Consumo registrado.</code></td>
+</tr>
+<tr>
+<td>Descartado, 1</td>
+<td>Fica 5 un e o descarte entra no histórico. <code>Descarte registrado.</code></td>
+</tr>
+<tr>
+<td>Consumido com a quantidade total</td>
+<td>O item é removido da despensa.</td>
+</tr>
+<tr>
+<td>Consumido, 0.3 de 1 kg</td>
+<td>Fica 0,7 kg (decimais funcionam).</td>
+</tr>
+<tr>
+<td>Quantidade 0</td>
+<td><code>Informe uma quantidade maior que zero.</code></td>
+</tr>
+<tr>
+<td>Quantidade maior que a disponível</td>
+<td><code>Quantidade maior que a disponível.</code></td>
+</tr>
+<tr>
+<td>Quantidade em branco</td>
+<td><code>Preencha: Quantidade (un).</code> (a unidade aparece no rótulo)</td>
+</tr>
+<tr>
+<td>Quantidade negativa</td>
+<td><code>Quantidade (un) deve ser um número maior ou igual a zero.</code></td>
+</tr>
+</tbody></table></div>
+<p>Alimentos vencidos não saem sozinhos da despensa nem entram na contagem de disponíveis. Para registrá-los como desperdício, use Descartado.</p>
+<h3>6.4 Excluir</h3>
+<p>Pergunta <code>Excluir este alimento da despensa?</code>. Excluir não registra descarte; use Consumir/descartar para que conste no resumo de desperdício.</p>
+<h2>7. Orçamento e histórico</h2>
+<h3>7.1 Definir orçamento</h3>
+<p>Botão Definir orçamento: Semanal ou Mensal e o valor.</p>
+<ul>
+<li>Valor em branco: <code>Preencha: Valor (R$).</code></li>
+<li>Valor negativo: <code>Valor (R$) deve ser um número maior ou igual a zero.</code></li>
+<li>Valor 0: aceito, mas tratado como sem orçamento (saldo vira um traço no Painel e na aba).</li>
+</ul>
+<p><strong>Janela de contagem:</strong> semanal começa na segunda-feira da semana atual; mensal, no dia 1 do mês atual. Compras arquivadas antes da janela não são descontadas (ex.: compra de domingo não entra no orçamento semanal da semana seguinte).</p>
+<h3>7.2 Cálculo do saldo</h3>
+<p>Disponível = orçamento − total pago das listas arquivadas na janela − estimativa da lista ativa.</p>
+<p><strong>Exemplo:</strong> orçamento semanal R$ 300,00; compra arquivada esta semana paga R$ 120,00; lista atual estimada em R$ 85,50. Saldo: 300 − 120 − 85,50 = <strong>R$ 94,50</strong>.</p>
+<p><strong>Excedido:</strong> com orçamento R$ 100,00 no mesmo cenário, o saldo fica negativo (−R$ 105,50), aparece <code>(orçamento excedido)</code> e a barra para em 100%.</p>
+<h3>7.3 Compra avulsa</h3>
+<p>Descrição e valor pago (ambos obrigatórios; erros <code>Preencha: Descrição.</code> e <code>Preencha: Valor pago (R$).</code>). Cria um registro arquivado sem itens que entra nos gastos do período e no histórico (<code>Compra registrada.</code>).</p>
+<h3>7.4 Histórico e desperdício</h3>
+<ul>
+<li>Histórico (&quot;1 compra&quot;, &quot;2 compras&quot;): número de compras arquivadas, total estimado e total pago (todas as datas) e as 6 mais recentes.</li>
+<li>Alimentos descartados (&quot;1 registro&quot;, &quot;2 registros&quot;): número de registros e os 6 mais recentes (data, nome e quantidade).</li>
+</ul>
+<p>Não existe edição ou exclusão de listas arquivadas nem de registros de descarte.</p>
+<h2>8. Lembretes e notificações</h2>
+<p>A aba mostra os alertas de Validade (vencidos ou até 3 dias) e Preparo de hoje (refeições do dia com horário e tempo de preparo), atualizados ao abrir o app, ao voltar para a aba e, com o app aberto, em até 1 minuto após a virada do dia.</p>
+<p><strong>Horários padrão de preparo</strong> (a refeição não tem campo de horário): café 07:00, almoço 11:30, lanche 15:30, jantar 18:30.</p>
+<h3>8.1 Notificações do navegador</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Estado exibido</th>
+<th>Significado</th>
+<th>O que fazer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>desativadas</td>
+<td>Permissão ainda não pedida; aparece o botão Ativar notificações.</td>
+<td>Clique e aceite no aviso do navegador.</td>
+</tr>
+<tr>
+<td>ativadas</td>
+<td>Permissão concedida.</td>
+<td>Nada.</td>
+</tr>
+<tr>
+<td>bloqueadas no navegador</td>
+<td>Permissão negada. O app não pode pedir de novo.</td>
+<td>Libere nas configurações do site e recarregue.</td>
+</tr>
+<tr>
+<td>indisponíveis neste navegador</td>
+<td>Sem suporte.</td>
+<td>Use os alertas da própria aba.</td>
+</tr>
+</tbody></table></div>
+<p>O app só pede permissão quando você clica no botão. Ao conceder, os avisos pendentes já são avaliados na hora.</p>
+<p><strong>Quando as notificações disparam</strong> (somente com a página aberta; verificação a cada 60 segundos, ao abrir e ao voltar para a aba). Sem permissão concedida, nada é enviado.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Título e corpo</th>
+<th>Janela</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Validade</td>
+<td><code>SmartPantry: validade</code>; lista até 4 alimentos</td>
+<td>Uma vez por dia</td>
+</tr>
+<tr>
+<td>Preparo</td>
+<td><code>Hora de preparar: &lt;nome&gt;</code>; corpo <code>Almoço às 11:30 · 40 min de preparo.</code></td>
+<td>De 30 min antes até 60 min depois do horário padrão, uma vez por refeição</td>
+</tr>
+</tbody></table></div>
+<p>Verificado: almoço às 10:59 não notifica; às 11:00 e às 12:30 notifica; às 12:31 não. Recarregar a página não repete a notificação do mesmo dia.</p>
+<p><strong>Falhas esperadas:</strong> com a página fechada, nada é enviado. Alguns navegadores restringem notificações em arquivos abertos localmente (<code>file://</code>); nesse caso o estado pode aparecer como bloqueado (foi o que ocorreu no ambiente de teste). Hospede o arquivo ou use os alertas da aba.</p>
+<h2>9. Dados demonstrativos</h2>
+<p><strong>Carregar</strong> (aba Lembretes) adiciona 4 refeições, 5 alimentos, 1 lista arquivada e 1 favorita, e define orçamento mensal de R$ 600,00 apenas se você ainda não tiver orçamento. Inclui alimentos vencidos e a vencer.</p>
+<p><strong>Cuidados</strong></p>
+<ul>
+<li>Carregar duas vezes duplica os exemplos (8 refeições, 10 alimentos, 2 favoritas).</li>
+<li>Remover pergunta <code>Remover todos os dados demonstrativos?</code>. Cancelar não apaga nada. Confirmar apaga só o que veio do exemplo, inclusive cópias de refeições demonstrativas, e preserva o que você cadastrou (testado com refeição, alimento e compra próprios).</li>
+<li>Se o orçamento era o do exemplo, volta a zero; um orçamento seu é preservado.</li>
+<li>Itens criados na despensa ao arquivar uma lista, e listas arquivadas por você, não são removidos.</li>
+</ul>
+<h2>10. Falhas de armazenamento e limitações</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Cenário</th>
+<th>Comportamento observado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Navegador bloqueia ou lota o armazenamento</td>
+<td>Aparece <code>Não foi possível salvar no navegador.</code> O app segue funcionando em memória, mas os dados se perdem ao recarregar.</td>
+</tr>
+<tr>
+<td>Dados salvos com JSON de sintaxe inválida</td>
+<td>O app abre vazio, sem erro visível. O próximo salvamento sobrescreve os dados antigos.</td>
+</tr>
+<tr>
+<td>JSON válido com tipos errados (ex.: <code>&quot;meals&quot;: null</code>, <code>&quot;pantry&quot;: {}</code>)</td>
+<td>Os campos inválidos são descartados e o app abre normalmente.</td>
+</tr>
+<tr>
+<td>Dados que impeçam a exibição de uma tela</td>
+<td>Aparece <code>Não foi possível exibir esta tela</code> com o botão <code>Apagar dados salvos e recomeçar</code>, que pede confirmação (<code>Apagar todos os dados salvos deste app?</code>).</td>
+</tr>
+<tr>
+<td>Duas abas do mesmo navegador</td>
+<td>As alterações de uma aba aparecem na outra automaticamente. Se você estiver com uma janela de cadastro aberta e outra aba gravar algo, ao Salvar aparece <code>Os dados foram alterados em outra aba. Cancele para atualizar e tente de novo.</code> e nada é sobrescrito. Ao cancelar, a tela se atualiza.</td>
+</tr>
+<tr>
+<td>Limpeza de dados do navegador ou troca de aparelho</td>
+<td>Todos os dados são perdidos. Não há exportação nem importação.</td>
+</tr>
+<tr>
+<td>Dois navegadores ou aparelhos diferentes</td>
+<td>Cada um tem os seus dados, sem sincronização.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Responsividade verificada</strong> (celular 375 px, celular pequeno 320 px, paisagem 700×375, tablet 768 px, desktop 1280 px): sem rolagem horizontal em nenhuma aba, inclusive com nomes de 120 caracteres sem espaço; cabeçalho de 87 px (12% da altura em 375×700 e 15% em 320×568), com menu em uma linha que rola para o lado; em telas baixas (altura até 500 px) o cabeçalho deixa de ser fixo; nos formulários, Salvar e Cancelar ficam sempre visíveis; botões com no mínimo 32 px de altura; todos os campos com rótulo associado; janelas com <code>role=dialog</code>. Os 7 dias do planejador ficam em uma linha a partir de 1100 px.</p>
+<p><strong>Não existe nesta versão:</strong> desfazer, exportar/importar dados, conversão de unidades, edição de listas arquivadas, remoção de descartes e de favoritas sem refeição de origem, horário próprio por refeição, número escrito depois do nome no ingrediente (<code>arroz 1 kg</code> é lido como nome) e preços reais de mercados. Os preços e custos são estimativas informadas por você. As sugestões de refeição não têm validação médica e não garantem adequação nutricional.</p>
+<h2>11. Roteiro rápido de verificação (executado e confirmado)</h2>
+<ol>
+<li><strong>Validação:</strong> abra + Refeição, deixe o nome vazio e salve. Esperado: <code>Preencha: Nome.</code></li>
+<li><strong>Ingredientes:</strong> crie uma refeição com <code>500 g arroz</code>, <code>2 ovos</code> e <code>arroz 500 g</code>. Esperado no cartão: <code>0/3 na despensa</code>. Ao editar, as linhas aparecem como <code>500 g arroz</code>, <code>2 un ovos</code> e <code>1 un arroz 500 g</code>.</li>
+<li><strong>Despensa:</strong> cadastre arroz 1000 g com validade em 20 dias. O cartão passa a <code>1/3 na despensa</code>.</li>
+<li><strong>Geração:</strong> em Compras, Gerar do planejamento. Esperado: <code>2 itens somados; 1 já coberto (despensa ou comprados).</code> Entram <code>ovos</code> (2 un) e <code>arroz 500 g</code> (1 un). O arroz não entra.</li>
+<li><strong>Repetição:</strong> clique de novo em Gerar. Esperado: nada muda (ovos continua 2 un).</li>
+<li><strong>Duplicados:</strong> adicione ovos, 3 un, R$ 3,00. Esperado: uma única linha de ovos com 5 un e R$ 3,00. Gere outra vez: continua 5 un.</li>
+<li><strong>Arquivar:</strong> marque os itens, Concluir e arquivar, valor R$ 20,00 e aceite adicionar à despensa (<code>Adicionar 2 itens comprados à despensa?</code>). Esperado: <code>Lista arquivada.</code> e novos itens na Despensa.</li>
+<li><strong>Orçamento:</strong> defina R$ 100,00 semanal. Esperado: R$ 80,00 disponível.</li>
+<li><strong>Validade:</strong> edite o arroz com validade anterior à compra. Esperado: <code>A validade não pode ser anterior à compra.</code></li>
+<li><strong>Descarte:</strong> descarte 1 ovo. Esperado: <code>Descarte registrado.</code> e <code>1 registro</code> em Alimentos descartados (aba Orçamento).</li>
+<li><strong>Duas abas:</strong> abra o app em duas abas, cadastre um alimento em cada uma. Esperado: os dois existem nas duas abas.</li>
+<li><strong>Foco:</strong> abra + Refeição e pressione Tab várias vezes. Esperado: o foco nunca sai da janela; Esc fecha e o foco volta ao botão.</li>
+<li><strong>Notificações:</strong> abra Lembretes e confira o estado. Com <code>Ativar notificações</code> visível, clique e aceite; o estado muda para ativadas.</li>
+</ol>
+</body></html>

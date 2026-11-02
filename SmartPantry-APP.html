@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SmartPantry</title>
+<style>
+:root{color-scheme:dark;--bg:#14100c;--s1:#1f1811;--s2:#2b2017;--ln:#40301f;--tx:#f6ece1;--mu:#ae9a88;--or:#ff8a1f;--or2:#ffb866;--ink:#1a0f05;--bad:#ff6b5a;--ok:#7fd48a;box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 "Segoe UI",system-ui,sans-serif;padding-top:env(safe-area-inset-top,0)}
+header{background:var(--s1);border-bottom:1px solid var(--ln);padding:8px 16px;position:sticky;top:0;z-index:5}
+.top{max-width:1180px;margin:auto;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
+h1{margin:0;font-size:1.35rem;line-height:1.2;color:var(--or);letter-spacing:-.02em}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:none;border:1px solid transparent;color:var(--mu);border-radius:99px;padding:6px 14px;font:inherit;cursor:pointer;min-height:38px}
+nav button[aria-current=page]{background:var(--or);color:var(--ink);font-weight:700}
+nav button:hover{border-color:var(--or)}
+main{max-width:1180px;margin:auto;padding:18px 16px 40px;overflow-wrap:anywhere}
+h2{margin:0 0 12px;font-size:1.25rem}h3{margin:0 0 8px;font-size:1.02rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.row h2{margin:0;flex:1 0 auto;overflow-wrap:normal}
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.c{background:var(--s1);border:1px solid var(--ln);border-radius:14px;padding:14px}
+.big{font-size:1.9rem;font-weight:800;color:var(--or)}
+.m,.hint{color:var(--mu);font-size:.85rem}
+ul{list-style:none;margin:0;padding:0}li{padding:7px 0;border-bottom:1px solid var(--ln)}li:last-child{border:0}
+button.b,a.b{background:var(--or);color:var(--ink);border:0;border-radius:10px;padding:9px 15px;font:inherit;font-weight:700;cursor:pointer;min-height:40px}
+button.b:hover{background:var(--or2)}
+button.o{background:none;color:var(--or);border:1px solid var(--or)}button.o:hover{background:var(--s2)}
+button.s{padding:4px 10px;min-height:32px;font-size:.82rem}
+button.x{color:var(--bad);border-color:var(--bad)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--or2);outline-offset:2px}
+.pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:.78rem;border:1px solid var(--ln)}
+.pill.bad{color:var(--bad);border-color:var(--bad)}.pill.warn{color:var(--or);border-color:var(--or)}.pill.ok{color:var(--ok);border-color:var(--ok)}
+.week{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+@media(min-width:1100px){.week{grid-template-columns:repeat(7,minmax(0,1fr))}}
+.day{background:var(--s1);border:1px solid var(--ln);border-radius:12px;padding:10px}
+.day.t{border-color:var(--or)}.day h3{color:var(--or2)}
+.slot{border-top:1px solid var(--ln);padding:8px 0}
+.meal{background:var(--s2);border-radius:8px;padding:8px;margin:6px 0;font-size:.9rem}
+.meal b{overflow-wrap:anywhere}.acts{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.bar{height:12px;background:var(--s2);border-radius:99px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--or)}
+.item{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.item .n{flex:1;min-width:140px}.done .n{text-decoration:line-through;color:var(--mu)}
+details{border:1px solid var(--ln);border-radius:10px;padding:8px 12px;margin-bottom:8px}summary{cursor:pointer;min-height:32px}
+label{display:block;margin:12px 0 4px;font-size:.88rem;color:var(--mu)}
+input,select,textarea{width:100%;background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:9px 12px;font:inherit;min-height:42px}
+.ov{position:fixed;inset:0;background:rgba(8,5,2,.85);display:flex;align-items:center;justify-content:center;padding:14px;z-index:20}
+.md{overflow-wrap:anywhere;background:var(--s1);border:2px solid var(--or);border-radius:16px;padding:18px;width:100%;max-width:480px;max-height:100%;overflow:auto}
+.err{color:var(--bad);min-height:1.2em;font-size:.88rem}
+#toast{width:max-content;max-width:calc(100vw - 32px);text-align:center;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0));background:var(--or);color:var(--ink);padding:10px 18px;border-radius:10px;font-weight:700;z-index:30;display:none}
+footer{max-width:1180px;margin:auto;padding:0 16px 30px;color:var(--mu);font-size:.82rem}
+@media(max-width:700px){.top{gap:4px 12px}nav{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:2px}nav button{white-space:nowrap;flex:0 0 auto}}
+@media(max-height:500px){header{position:static}}
+.ft{position:sticky;bottom:-18px;background:var(--s1);padding:10px 0 4px;margin:12px 0 0}
+.warnbox{border-left:4px solid var(--or);background:var(--s2);padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:.88rem}
+</style>
+</head>
+<body>
+<header><div class="top"><h1>🧺 SmartPantry</h1><nav id="nav" aria-label="Seções"></nav></div></header>
+<main id="v"></main>
+<footer>Seus dados ficam apenas neste navegador (localStorage): não há backup automático na nuvem nem sincronização entre dispositivos. Preços e custos são estimativas informadas por você; o app não consulta mercados nem serviços de entrega. As refeições não têm validação médica nem garantem adequação nutricional.</footer>
+<div id="toast" role="status"></div>
+<script>
+(function(){
+const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9),p2=n=>String(n).padStart(2,'0');
+const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const R=v=>(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const iso=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()),today=()=>iso(new Date());
+const br=s=>s?s.split('-').reverse().join('/'):'';
+const addD=(s,n)=>{const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
+const diff=s=>Math.round((new Date(s+'T12:00')-new Date(today()+'T12:00'))/864e5);
+const TN={cafe:'Café da manhã',almoco:'Almoço',lanche:'Lanche',jantar:'Jantar'},ORD=Object.keys(TN),TT={cafe:'07:00',almoco:'11:30',lanche:'15:30',jantar:'18:30'};
+const UN=['un','kg','g','L','ml','pacote','caixa','dúzia','xícara','colher'];
+const WD=['dom','seg','ter','qua','qui','sex','sáb'];
+let S,tab='home',wk=0,lastRaw=null,pend=false;
+const arr=v=>Array.isArray(v)?v.filter(x=>x&&typeof x==='object'):[];
+const r2=v=>Math.round(v*100)/100,r3=v=>Math.round(v*1000)/1000,pl=(n,a,b)=>n+' '+(n===1?a:b);
+function loadS(){let r=null;try{lastRaw=localStorage.getItem('smartpantry.v1');r=JSON.parse(lastRaw)}catch(x){r=null}
+ if(!r||typeof r!=='object'||Array.isArray(r))r={};const b=r.budget&&typeof r.budget==='object'?r.budget:{};
+ S={meals:arr(r.meals).map(m=>Object.assign(m,{ing:arr(m.ing)})),favs:arr(r.favs).map(m=>Object.assign(m,{ing:arr(m.ing)})),pantry:arr(r.pantry),lists:arr(r.lists).map(l=>Object.assign(l,{items:arr(l.items)})),waste:arr(r.waste),budget:{v:+b.v||0,p:b.p==='month'?'month':'week',demo:b.demo},notified:r.notified&&typeof r.notified==='object'&&!Array.isArray(r.notified)?r.notified:{}}}
+loadS();
+const save=()=>{try{const j=JSON.stringify(S);localStorage.setItem('smartpantry.v1',j);lastRaw=j}catch(x){toast('Não foi possível salvar no navegador.')}};
+addEventListener('storage',ev=>{if(ev.key&&ev.key!=='smartpantry.v1')return;if(document.querySelector('.ov')){pend=true;return}loadS();render()});
+function toast(t){const o=$('#toast');o.textContent=t;o.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>o.style.display='none',2800)}
+const nm=n=>String(n).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim().split(' ').map(w=>w.length>3&&w.endsWith('s')&&!w.endsWith('ss')?w.slice(0,-1):w).join(' ');
+const key=(n,u)=>nm(n)+'|'+u;
+const UM={un:'un',unidade:'un',unidades:'un',kg:'kg',quilo:'kg',quilos:'kg',g:'g',grama:'g',gramas:'g',ml:'ml',l:'L',litro:'L',litros:'L',pacote:'pacote',pacotes:'pacote',caixa:'caixa',caixas:'caixa','dúzia':'dúzia','dúzias':'dúzia',duzia:'dúzia',duzias:'dúzia','xícara':'xícara','xícaras':'xícara',xicara:'xícara',xicaras:'xícara',colher:'colher',colheres:'colher'};
+const FR={'½':.5,'¼':.25,'¾':.75,'⅓':1/3,'⅔':2/3};
+function num(t){t=t.trim();if(FR[t]!==undefined)return r3(FR[t]);let s=0;t.split(/\s+/).forEach(p=>{const m=p.match(/^(\d+)\/(\d+)$/);s+=m?(+m[1])/(+m[2]):parseFloat(p.replace(',','.'))||0});return r3(s)}
+const IR=/^(\d+\s+\d+\/\d+|\d+\/\d+|[½¼¾⅓⅔]|\d+[.,]?\d*)\s*(?:(un\.?|unidades?|kg|quilos?|gramas?|g|ml|litros?|l|pacotes?|caixas?|dúzias?|duzias?|xícaras?|xicaras?|colheres?)(?=\s|$))?\s*(?:de\s+)?(.+)$/i;
+function parseIng(t){return t.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(IR);if(!m)return{n:l,q:1,u:'un'};return{n:m[3].trim(),q:num(m[1])||1,u:m[2]?UM[m[2].toLowerCase().replace(/\.$/,'')]||'un':'un'}})}
+const fmtIng=a=>(a||[]).map(i=>i.q+' '+i.u+' '+i.n).join('\n');
+const qf=q=>(+q).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const pantryHas=n=>S.pantry.find(p=>nm(p.n)===nm(n)&&p.q>0&&(!p.exp||diff(p.exp)>=0));
+const avail=m=>(m.ing||[]).filter(i=>pantryHas(i.n)).length;
+const pill=x=>{if(!x)return'<span class="pill">Sem validade</span>';const d=diff(x);return d<0?'<span class="pill bad">Vencido há '+(-d)+'d</span>':d===0?'<span class="pill warn">Vence hoje</span>':d<=3?'<span class="pill warn">Vence em '+d+'d</span>':'<span class="pill ok">Até '+br(x)+'</span>'};
+const expiring=()=>S.pantry.filter(p=>p.exp&&diff(p.exp)<=3).sort((a,b)=>a.exp.localeCompare(b.exp));
+const active=()=>S.lists.find(l=>!l.arch);
+const est=l=>l?r2(l.items.reduce((s,i)=>s+(+i.p||0),0)):0;
+
+/* Modal de formulário */
+function form(title,fields,ok,sub){
+  const o=document.createElement('div');o.className='ov';
+  const f=fields.map(x=>{const id='f_'+x.k,v=x.v??'',req=x.r?' required':'';let c;
+    if(x.t==='select')c=`<select id="${id}"${req}>${x.o.map(a=>`<option value="${e(a[0])}"${a[0]==v?' selected':''}>${e(a[1])}</option>`).join('')}</select>`;
+    else if(x.t==='textarea')c=`<textarea id="${id}" rows="4" maxlength="2000"${req}>${e(v)}</textarea>`;
+    else c=`<input id="${id}" type="${x.t||'text'}" value="${e(v)}"${req}${x.t==='number'?' step="any" min="0"':x.t?'':' maxlength="80"'}>`;
+    return`<label for="${id}">${e(x.l)}${x.r?' *':''}</label>${c}${x.h?`<div class="hint">${e(x.h)}</div>`:''}`}).join('');
+  o.innerHTML=`<form class="md" role="dialog" aria-modal="true" aria-label="${e(title)}" novalidate><h2>${e(title)}</h2>${f}<div class="err" role="alert"></div><div class="row ft"><button class="b">${sub||'Salvar'}</button><button type="button" class="b o" data-c>Cancelar</button></div></form>`;
+  document.body.appendChild(o);const fm=o.querySelector('form');
+  const prev=document.activeElement,blk=['header','main','footer'].map(q=>document.querySelector(q));blk.forEach(x=>x.inert=true);
+  let kd;const close=()=>{document.removeEventListener('keydown',kd);o.remove();blk.forEach(x=>x.inert=false);if(prev&&prev.isConnected)prev.focus();if(pend){pend=false;loadS();render()}};
+  kd=ev=>{if(ev.key==='Escape')close()};document.addEventListener('keydown',kd);
+  o.querySelector('[data-c]').onclick=close;
+  fm.onsubmit=ev=>{ev.preventDefault();let cur=null;try{cur=localStorage.getItem('smartpantry.v1')}catch(x){}
+    if(cur!==lastRaw){fm.querySelector('.err').textContent='Os dados foram alterados em outra aba. Cancele para atualizar e tente de novo.';return}
+    const val={};for(const x of fields){const v=fm.querySelector('#f_'+x.k).value.trim();if(x.r&&!v){fm.querySelector('.err').textContent='Preencha: '+x.l+'.';fm.querySelector('#f_'+x.k).focus();return}val[x.k]=x.t==='number'&&v!==''?parseFloat(v.replace(',','.')):v;if(x.t==='number'&&v!==''&&!isNaN(val[x.k]))val[x.k]=x.c?r2(val[x.k]):r3(val[x.k]);if(x.t==='number'&&v!==''&&(isNaN(val[x.k])||val[x.k]<0)){fm.querySelector('.err').textContent=x.l+' deve ser um número maior ou igual a zero.';return}}
+    const er=ok(val);if(er){fm.querySelector('.err').textContent=er;return}save();close();render()};
+  const first=fm.querySelector('input,select,textarea');first&&first.focus();
+}
+const typeOpts=ORD.map(t=>[t,TN[t]]),unitOpts=UN.map(u=>[u,u]);
+/* Refeições */
+function mealForm(d,t,m){m=m||{};form(m.id?'Editar refeição':'Nova refeição',[
+ {k:'name',l:'Nome',r:1,v:m.name},{k:'date',l:'Data',t:'date',r:1,v:m.date||d||today()},{k:'type',l:'Refeição',t:'select',o:typeOpts,v:m.type||t||'almoco'},
+ {k:'ing',l:'Ingredientes',t:'textarea',v:fmtIng(m.ing),h:'Um por linha: quantidade, unidade e nome. Ex.: 500 g arroz'},
+ {k:'prep',l:'Modo de preparo',t:'textarea',v:m.prep},{k:'cost',l:'Custo estimado (R$)',t:'number',c:1,v:m.cost},{k:'time',l:'Tempo de preparo (min)',t:'number',v:m.time},
+ {k:'fav',l:'Favorita?',t:'select',o:[['n','Não'],['s','Sim, reutilizar depois']],v:m.fav?'s':'n'}],v=>{
+  const ing=parseIng(v.ing||'');const n={id:m.id||uid(),name:v.name,date:v.date,type:v.type,ing,prep:v.prep,cost:v.cost||0,time:v.time||0,fav:v.fav==='s',demo:m.demo};
+  if(m.id)S.meals=S.meals.map(x=>x.id===m.id?n:x);else S.meals.push(n);
+  if(m.id&&m.fav&&m.name!==n.name&&!S.meals.some(x=>x.fav&&x.name===m.name))S.favs=S.favs.filter(f=>f.name!==m.name);
+  S.favs=S.favs.filter(f=>f.name!==n.name);if(n.fav)S.favs.push({name:n.name,type:n.type,ing,prep:n.prep,cost:n.cost,time:n.time,fav:true});toast('Refeição salva.')})}
+/* Despensa */
+function pantryForm(p){p=p||{};form(p.id?'Editar alimento':'Novo alimento',[{k:'n',l:'Alimento',r:1,v:p.n},{k:'q',l:'Quantidade',t:'number',r:1,v:p.q},{k:'u',l:'Unidade',t:'select',o:unitOpts,v:p.u||'un'},{k:'buy',l:'Data da compra',t:'date',v:p.buy||today()},{k:'exp',l:'Validade',t:'date',v:p.exp,h:'Deixe em branco se não houver validade.'}],v=>{
+  if(v.buy&&v.exp&&v.exp<v.buy)return'A validade não pode ser anterior à compra.';
+  const n={id:p.id||uid(),n:v.n,q:v.q,u:v.u,buy:v.buy,exp:v.exp,demo:p.demo};if(p.id)S.pantry=S.pantry.map(x=>x.id===p.id?n:x);else S.pantry.push(n);toast('Alimento salvo.')})}
+/* Compras */
+function addItem(l,it){const k=key(it.n,it.u),x=l.items.find(i=>!i.done&&key(i.n,i.u)===k);if(x){x.q=r3(x.q+it.q);x.p=r2((+x.p||0)+(+it.p||0))}else l.items.push(Object.assign({id:uid(),done:false,p:0},it))}
+function getList(){let l=active();if(!l){l={id:uid(),name:'Lista de compras',items:[],created:today()};S.lists.push(l)}return l}
+function itemForm(i){i=i||{};form(i.id?'Editar item':'Novo item',[{k:'n',l:'Produto',r:1,v:i.n},{k:'q',l:'Quantidade',t:'number',r:1,v:i.q},{k:'u',l:'Unidade',t:'select',o:unitOpts,v:i.u||'un'},{k:'p',l:'Preço estimado total (R$)',t:'number',c:1,v:i.p}],v=>{
+  const l=getList();if(i.id){const t=l.items.find(x=>x.id===i.id);if(key(t.n,t.u)!==key(v.n,v.u)){t.src='man';t.pq=0}Object.assign(t,{n:v.n,q:v.q,u:v.u,p:v.p||0})}else addItem(l,{n:v.n,q:v.q,u:v.u,p:v.p||0,src:'man'});toast('Item salvo.')})}
+function gen(){const l=getList(),end=addD(today(),6),need={};
+  S.meals.filter(m=>m.date>=today()&&m.date<=end).forEach(m=>(m.ing||[]).forEach(i=>{const k=key(i.n,i.u);need[k]=need[k]||{n:i.n,u:i.u,q:0};need[k].q+=i.q}));
+  const old={};
+  l.items.forEach(i=>{if(i.done)return;if(i.src==='plan'&&i.pq===undefined)i.pq=i.q;if(i.pq){i.q=r3(i.q-i.pq);i.pq=0;if(i.src==='plan'&&i.q<=0.0005)old[key(i.n,i.u)]=i.p}});
+  l.items=l.items.filter(i=>i.done||!(i.src==='plan'&&i.q<=0.0005));
+  let add=0,skip=0;Object.keys(need).forEach(k=>{const n=need[k],st=S.pantry.filter(p=>key(p.n,p.u)===k&&(!p.exp||diff(p.exp)>=0)).reduce((a,p)=>a+p.q,0),bo=l.items.filter(i=>i.done&&key(i.n,i.u)===k).reduce((a,i)=>a+i.q,0),q=r3(n.q-st-bo);if(q<=0){skip++;return}
+   const x=l.items.find(i=>!i.done&&key(i.n,i.u)===k);if(x){x.q=r3(x.q+q);x.pq=q}else l.items.push({id:uid(),n:n.n,u:n.u,q:q,p:old[k]||0,done:false,src:'plan',pq:q});add++});
+  save();render();toast((add===1?'1 item somado':add+' itens somados')+'; '+skip+(skip===1?' já coberto':' já cobertos')+' (despensa ou comprados).')}
+function archive(){const l=active();if(!l||!l.items.length)return toast('A lista está vazia.');
+  form('Concluir lista',[{k:'paid',l:'Valor efetivamente pago (R$)',t:'number',c:1,r:1,v:est(l)||''},{k:'name',l:'Nome da lista',r:1,v:l.name+' '+br(today())}],v=>{l.name=v.name;l.paid=v.paid;l.est=est(l);l.arch=today();
+   const bought=l.items.filter(i=>i.done);if(bought.length&&confirm('Adicionar '+pl(bought.length,'item comprado','itens comprados')+' à despensa?'))bought.forEach(i=>{const x=S.pantry.find(p=>key(p.n,p.u)===key(i.n,i.u)&&!p.exp);if(x)x.q+=i.q;else S.pantry.push({id:uid(),n:i.n,q:i.q,u:i.u,buy:today(),exp:''})});toast('Lista arquivada.')},'Arquivar')}
+/* Demo */
+function demo(){const t=today(),A=n=>addD(t,n);
+ S.meals.push(
+ {id:uid(),date:t,type:'cafe',name:'Pão com ovos mexidos',ing:[{n:'ovos',q:3,u:'un'},{n:'pão francês',q:2,u:'un'}],prep:'Mexa os ovos na frigideira e sirva no pão.',cost:4.5,time:10,demo:1},
+ {id:uid(),date:t,type:'almoco',name:'Arroz, feijão e frango grelhado',ing:[{n:'arroz',q:200,u:'g'},{n:'feijão',q:150,u:'g'},{n:'peito de frango',q:300,u:'g'}],prep:'Cozinhe o arroz e o feijão; grelhe o frango temperado.',cost:14,time:45,fav:true,demo:1},
+ {id:uid(),date:A(1),type:'jantar',name:'Macarrão ao molho de tomate',ing:[{n:'macarrão',q:250,u:'g'},{n:'tomate',q:4,u:'un'}],prep:'Cozinhe o macarrão e prepare o molho.',cost:9,time:25,demo:1},
+ {id:uid(),date:A(2),type:'lanche',name:'Iogurte com banana',ing:[{n:'iogurte',q:1,u:'un'},{n:'banana',q:2,u:'un'}],prep:'Misture e sirva gelado.',cost:5,time:5,demo:1});
+ S.pantry.push({id:uid(),n:'iogurte',q:2,u:'un',buy:A(-6),exp:A(1),demo:1},{id:uid(),n:'tomate',q:6,u:'un',buy:A(-4),exp:A(2),demo:1},{id:uid(),n:'leite',q:1,u:'L',buy:A(-10),exp:A(-1),demo:1},{id:uid(),n:'arroz',q:1000,u:'g',buy:A(-20),exp:A(180),demo:1},{id:uid(),n:'ovos',q:6,u:'un',buy:A(-3),exp:A(15),demo:1});
+ S.lists.push({id:uid(),name:'Compra do mês passado',items:[{id:uid(),n:'arroz',q:5,u:'kg',p:28,done:true},{id:uid(),n:'café',q:500,u:'g',p:22,done:true}],arch:A(-12),paid:52.4,est:50,demo:1});
+ S.favs.push({name:'Arroz, feijão e frango grelhado',type:'almoco',ing:[{n:'arroz',q:200,u:'g'}],prep:'',cost:14,time:45,fav:true,demo:1});
+ if(!S.budget.v)S.budget={v:600,p:'month',demo:1};save();render();toast('Dados demonstrativos carregados.')}
+function undemo(){if(!confirm('Remover todos os dados demonstrativos?'))return;S.meals=S.meals.filter(x=>!x.demo);S.pantry=S.pantry.filter(x=>!x.demo);S.lists=S.lists.filter(x=>!x.demo);S.favs=S.favs.filter(x=>!x.demo);if(S.budget.demo)S.budget={v:0,p:'week'};save();render();toast('Dados demonstrativos removidos.')}
+/* Orçamento */
+function spent(){const t=new Date(),s=S.budget.p==='month'?iso(new Date(t.getFullYear(),t.getMonth(),1)):addD(today(),-((t.getDay()+6)%7));return S.lists.filter(l=>l.arch&&l.arch>=s).reduce((a,l)=>a+(+l.paid||0),0)}
+const avBudget=()=>S.budget.v-spent()-est(active());
+/* Views */
+const mealHTML=m=>`<li><b>${e(m.name)}</b><br><span class="m">${TN[m.type]} · ${br(m.date)} · ${m.time||0} min · ${R(m.cost)}</span></li>`;
+const V={
+home(){const t=today(),ms=S.meals.filter(m=>m.date>=t&&m.date<=addD(t,3)).sort((a,b)=>a.date.localeCompare(b.date)||ORD.indexOf(a.type)-ORD.indexOf(b.type)),ex=expiring(),l=active(),pend=l?l.items.filter(i=>!i.done).length:0,av=avBudget();
+ return`<div class="row"><h2>Painel</h2><button class="b" data-a="meal">+ Refeição</button><button class="b o" data-a="pan">+ Alimento</button><button class="b o" data-a="item">+ Item de compra</button></div>
+<div class="g"><div class="c"><h3>Refeições (hoje e próximos 3 dias)</h3><ul>${ms.map(mealHTML).join('')||'<li class="m">Nada planejado. Use “+ Refeição”.</li>'}</ul></div>
+<div class="c"><h3>Perto do vencimento</h3><ul>${ex.map(p=>`<li>${e(p.n)} · ${qf(p.q)} ${p.u} ${pill(p.exp)}</li>`).join('')||'<li class="m">Nenhum alimento perto de vencer.</li>'}</ul></div>
+<div class="c"><h3>Orçamento ${S.budget.p==='month'?'mensal':'semanal'}</h3><div class="big">${S.budget.v?R(av):'—'}</div><div class="m">${S.budget.v?'disponível de '+R(S.budget.v):'Defina um orçamento na aba Orçamento.'}</div></div>
+<div class="c"><h3>Lista de compras</h3><div class="big">${pend}</div><div class="m">${pend===1?'item pendente':'itens pendentes'} · estimativa ${R(est(l))}</div></div></div>
+<div class="warnbox" style="margin-top:14px">Dados salvos só neste navegador. Para conhecer o app, use os dados demonstrativos opcionais na aba Lembretes.</div>`},
+plan(){const t=today(),s=addD(t,wk*7);let h=`<div class="row"><h2>Planejador semanal</h2><button class="b o s" data-a="wk" data-d="-1">← Anterior</button><button class="b o s" data-a="wk" data-d="0">Hoje</button><button class="b o s" data-a="wk" data-d="1">Próxima →</button></div><div class="week">`;
+ for(let i=0;i<7;i++){const d=addD(s,i),dt=new Date(d+'T12:00');h+=`<section class="day${d===t?' t':''}"><h3>${WD[dt.getDay()]} ${br(d).slice(0,5)}</h3>`;
+  ORD.forEach(ty=>{const ms=S.meals.filter(m=>m.date===d&&m.type===ty);h+=`<div class="slot"><div class="m">${TN[ty]}</div>`+ms.map(m=>`<div class="meal"><b>${e(m.name)}</b><div class="m">${m.time||0} min · ${R(m.cost)} · ${avail(m)}/${(m.ing||[]).length} na despensa</div>${m.prep?`<details><summary>Preparo</summary>${e(m.prep)}</details>`:''}<div class="acts"><button class="b o s" data-a="edit" data-id="${m.id}" aria-label="Editar ${e(m.name)}">Editar</button><button class="b o s" data-a="copy" data-id="${m.id}" aria-label="Copiar ${e(m.name)}">Copiar</button><button class="b o s" data-a="favt" data-id="${m.id}" aria-label="Favorita: ${e(m.name)}" aria-pressed="${!!m.fav}">${m.fav?'★':'☆'}</button><button class="b o s x" data-a="delm" data-id="${m.id}" aria-label="Excluir ${e(m.name)}">Excluir</button></div></div>`).join('')+`<div class="acts"><button class="b o s" data-a="meal" data-d="${d}" data-t="${ty}" aria-label="Adicionar refeição: ${TN[ty]}, ${WD[dt.getDay()]} ${br(d).slice(0,5)}">+ Add</button><button class="b o s" data-a="favp" data-d="${d}" data-t="${ty}" aria-label="Usar favorita: ${TN[ty]}, ${WD[dt.getDay()]} ${br(d).slice(0,5)}">★ Favoritas</button></div></div>`});
+  h+='</section>'}return h+'</div>'},
+shop(){const l=active(),its=l?l.items:[];const ar=S.lists.filter(x=>x.arch).sort((a,b)=>b.arch.localeCompare(a.arch));
+ return`<div class="row"><h2>Lista de compras</h2><button class="b" data-a="item">+ Item</button><button class="b o" data-a="gen">Gerar do planejamento (7 dias)</button><button class="b o" data-a="arch">Concluir e arquivar</button></div>
+<div class="c"><div class="m">Estimativa total: <b>${R(est(l))}</b> · Já marcado: ${R(its.filter(i=>i.done).reduce((s,i)=>s+(+i.p||0),0))} · Pendentes: ${its.filter(i=>!i.done).length}</div><ul>${its.map(i=>`<li class="item${i.done?' done':''}"><input type="checkbox" style="width:24px;min-height:24px" data-a="tog" data-id="${i.id}" ${i.done?'checked':''} aria-label="Comprado: ${e(i.n)}"><span class="n">${e(i.n)} · ${qf(i.q)} ${i.u}</span><span>${R(i.p)}</span><button class="b o s" data-a="editi" data-id="${i.id}" aria-label="Editar ${e(i.n)}">Editar</button><button class="b o s x" data-a="deli" data-id="${i.id}" aria-label="Remover ${e(i.n)}">Remover</button></li>`).join('')||'<li class="m">Lista vazia. Adicione itens ou gere a partir do planejamento; ingredientes repetidos são combinados e o que já está na despensa é descontado.</li>'}</ul></div>
+<h2 style="margin-top:20px">Listas arquivadas</h2>${ar.map(x=>`<details><summary>${e(x.name)} · ${br(x.arch)} · pago ${R(x.paid)}</summary><ul>${x.items.map(i=>`<li>${e(i.n)} · ${qf(i.q)} ${i.u} · ${R(i.p)}</li>`).join('')||'<li class="m">Sem itens (compra avulsa).</li>'}</ul>${x.items.length?`<button class="b o s" data-a="reuse" data-id="${x.id}">Reutilizar esta lista</button>`:''}</details>`).join('')||'<p class="m">Nenhuma lista arquivada.</p>'}`},
+pan(){const a=S.pantry.slice().sort((x,y)=>(x.exp||'9').localeCompare(y.exp||'9'));
+ return`<div class="row"><h2>Despensa</h2><button class="b" data-a="pan">+ Alimento</button></div><div class="c"><ul>${a.map(p=>`<li class="item"><span class="n"><b>${e(p.n)}</b> · ${qf(p.q)} ${p.u}<br><span class="m">Compra ${br(p.buy)||'—'} · Validade ${br(p.exp)||'—'}</span></span>${pill(p.exp)}<button class="b o s" data-a="use" data-id="${p.id}" aria-label="Consumir ou descartar ${e(p.n)}">Consumir/descartar</button><button class="b o s" data-a="editp" data-id="${p.id}" aria-label="Editar ${e(p.n)}">Editar</button><button class="b o s x" data-a="delp" data-id="${p.id}" aria-label="Excluir ${e(p.n)}">Excluir</button></li>`).join('')||'<li class="m">Despensa vazia.</li>'}</ul></div><p class="m">Nas refeições do planejador, “n/total na despensa” indica ingredientes que você já tem (válidos e com quantidade).</p>`},
+bud(){const sp=spent(),l=active(),es=est(l),v=S.budget.v,pc=v?Math.min(100,(sp+es)/v*100):0,ar=S.lists.filter(x=>x.arch).sort((a,b)=>b.arch.localeCompare(a.arch));const tp=ar.reduce((s,x)=>s+(+x.paid||0),0),te=ar.reduce((s,x)=>s+(+x.est||0),0);
+ return`<div class="row"><h2>Orçamento e histórico</h2><button class="b" data-a="bud">Definir orçamento</button><button class="b o" data-a="extra">Registrar compra avulsa</button></div>
+<div class="g"><div class="c"><h3>${S.budget.p==='month'?'Mês atual':'Semana atual'}</h3><div class="m">Orçamento ${R(v)} · Pago ${R(sp)} · Lista atual (estimado) ${R(es)}</div><div class="bar"><i style="width:${pc}%"></i></div><div class="big">${v?R(v-sp-es):'—'}</div><div class="m">disponível ${v&&v-sp-es<0?'(orçamento excedido)':''}</div></div>
+<div class="c"><h3>Histórico</h3><div class="m">${pl(ar.length,'compra','compras')} · estimado ${R(te)} · pago ${R(tp)}</div><ul>${ar.slice(0,6).map(x=>`<li>${br(x.arch)} · ${e(x.name)} · ${R(x.paid)}</li>`).join('')||'<li class="m">Sem compras registradas.</li>'}</ul></div>
+<div class="c"><h3>Alimentos descartados</h3><div class="m">${pl((S.waste||[]).length,'registro','registros')}</div><ul>${(S.waste||[]).slice(-6).reverse().map(w=>`<li>${br(w.d)} · ${e(w.n)} · ${qf(w.q)} ${w.u}</li>`).join('')||'<li class="m">Nenhum descarte registrado.</li>'}</ul></div></div>`},
+rem(){const ex=expiring(),np='Notification' in window,pm=np?Notification.permission:'unsupported';const ms=S.meals.filter(m=>m.date===today()).sort((a,b)=>TT[a.type].localeCompare(TT[b.type]));
+ return`<div class="row"><h2>Lembretes</h2></div><div class="g"><div class="c"><h3>Validade</h3><ul>${ex.map(p=>`<li>${e(p.n)} · ${qf(p.q)} ${p.u} ${pill(p.exp)}</li>`).join('')||'<li class="m">Sem alertas de validade.</li>'}</ul></div>
+<div class="c"><h3>Preparo de hoje</h3><ul>${ms.map(m=>`<li>${TT[m.type]} · <b>${e(m.name)}</b> <span class="m">(${m.time||0} min de preparo)</span></li>`).join('')||'<li class="m">Nenhuma refeição hoje.</li>'}</ul></div>
+<div class="c"><h3>Notificações do navegador</h3><p class="m">Estado: ${pm==='granted'?'ativadas':pm==='denied'?'bloqueadas no navegador':pm==='unsupported'?'indisponíveis neste navegador':'desativadas'}. Só pedimos permissão quando você clicar abaixo; os alertas funcionam com o app aberto e são atualizados ao reabrir.</p>${pm==='default'?'<button class="b" data-a="notif">Ativar notificações</button>':''}</div>
+<div class="c"><h3>Dados demonstrativos</h3><p class="m">Exemplos opcionais para testar o app.</p><button class="b o" data-a="demo">Carregar</button> <button class="b o x" data-a="undemo">Remover</button></div></div>`}};
+const TABS={home:'Painel',plan:'Planejador',shop:'Compras',pan:'Despensa',bud:'Orçamento',rem:'Lembretes'};
+function render(){$('#nav').innerHTML=Object.keys(TABS).map(k=>`<button data-a="tab" data-t="${k}"${k===tab?' aria-current="page"':''}>${TABS[k]}</button>`).join('');try{$('#v').innerHTML=V[tab]()}catch(x){$('#v').innerHTML='<div class="c"><h2>Não foi possível exibir esta tela</h2><p class="m">Os dados salvos podem estar incompletos ou corrompidos.</p><button class="b x" data-a="reset">Apagar dados salvos e recomeçar</button></div>'}}
+/* Ações */
+const find=(a,id)=>a.find(x=>x.id===id);
+const A={
+tab:d=>{tab=d.t;render();scrollTo(0,0)},wk:d=>{wk=d.d==='0'?0:wk+ +d.d;render()},
+meal:d=>mealForm(d.d,d.t),edit:d=>mealForm(0,0,find(S.meals,d.id)),
+delm:d=>{if(confirm('Excluir esta refeição?')){S.meals=S.meals.filter(m=>m.id!==d.id);save();render();toast('Refeição excluída.')}},
+copy:d=>{const m=find(S.meals,d.id);form('Copiar refeição',[{k:'date',l:'Copiar para a data',t:'date',r:1,v:addD(m.date,1)},{k:'type',l:'Refeição',t:'select',o:typeOpts,v:m.type}],v=>{S.meals.push(Object.assign({},m,{id:uid(),date:v.date,type:v.type,demo:m.demo}));toast('Refeição copiada.')},'Copiar')},
+favt:d=>{const m=find(S.meals,d.id);m.fav=!m.fav;S.favs=S.favs.filter(f=>f.name!==m.name);if(m.fav)S.favs.push({name:m.name,type:m.type,ing:m.ing,prep:m.prep,cost:m.cost,time:m.time,fav:true});save();render();toast(m.fav?'Salva nas favoritas.':'Removida das favoritas.')},
+favp:d=>{if(!S.favs.length)return toast('Você ainda não tem favoritas. Marque uma refeição com ★.');form('Reutilizar favorita',[{k:'f',l:'Refeição favorita',t:'select',o:S.favs.map((f,i)=>[i,f.name]),r:1}],v=>{const f=S.favs[+v.f];S.meals.push(Object.assign({},f,{id:uid(),date:d.d,type:d.t,demo:f.demo}));toast('Favorita adicionada.')},'Adicionar')},
+gen:()=>gen(),item:()=>itemForm(),editi:d=>itemForm(find(getList().items,d.id)),
+deli:d=>{if(confirm('Remover este item?')){const l=getList();l.items=l.items.filter(i=>i.id!==d.id);save();render()}},
+tog:d=>{const i=find(getList().items,d.id);i.done=!i.done;save();render()},arch:()=>archive(),
+reuse:d=>{const o=find(S.lists,d.id),l=getList();o.items.forEach(i=>addItem(l,{n:i.n,q:i.q,u:i.u,p:i.p,src:'man'}));save();tab='shop';render();toast('Itens adicionados à lista atual.')},
+pan:()=>pantryForm(),editp:d=>pantryForm(find(S.pantry,d.id)),
+delp:d=>{if(confirm('Excluir este alimento da despensa?')){S.pantry=S.pantry.filter(p=>p.id!==d.id);save();render()}},
+use:d=>{const p=find(S.pantry,d.id);form('Atualizar: '+p.n,[{k:'a',l:'Ação',t:'select',o:[['c','Consumido'],['d','Descartado']]},{k:'q',l:'Quantidade ('+p.u+')',t:'number',r:1,v:p.q,h:'Disponível: '+qf(p.q)}],v=>{if(v.q<=0)return'Informe uma quantidade maior que zero.';if(v.q>p.q)return'Quantidade maior que a disponível.';p.q=Math.round((p.q-v.q)*1000)/1000;if(v.a==='d'){S.waste=S.waste||[];S.waste.push({d:today(),n:p.n,q:v.q,u:p.u})}if(p.q<=0)S.pantry=S.pantry.filter(x=>x.id!==p.id);toast(v.a==='d'?'Descarte registrado.':'Consumo registrado.')},'Registrar')},
+bud:()=>form('Orçamento de supermercado',[{k:'p',l:'Período',t:'select',o:[['week','Semanal'],['month','Mensal']],v:S.budget.p},{k:'v',l:'Valor (R$)',t:'number',c:1,r:1,v:S.budget.v||''}],v=>{S.budget={v:v.v,p:v.p};toast('Orçamento atualizado.')}),
+extra:()=>form('Compra avulsa',[{k:'name',l:'Descrição',r:1},{k:'paid',l:'Valor pago (R$)',t:'number',c:1,r:1}],v=>{S.lists.push({id:uid(),name:v.name,items:[],arch:today(),paid:v.paid,est:v.paid});toast('Compra registrada.')}),
+reset:()=>{if(confirm('Apagar todos os dados salvos deste app?')){try{localStorage.removeItem('smartpantry.v1')}catch(x){}loadS();render()}},
+notif:()=>{Notification.requestPermission().then(()=>{render();notify()})},demo:()=>demo(),undemo:()=>undemo()};
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-a]');if(b&&b.dataset.a!=='tog'&&A[b.dataset.a])A[b.dataset.a](b.dataset)});
+document.addEventListener('change',ev=>{const b=ev.target.closest('[data-a="tog"]');if(b)A.tog(b.dataset)});
+/* Notificações e alertas */
+function notify(){const t=today(),now=new Date(),hm=now.getHours()*60+now.getMinutes();let ch=false;
+ const send=(k,ti,b)=>{if(S.notified[k])return;S.notified[k]=1;ch=true;try{new Notification(ti,{body:b})}catch(x){}};
+ if(!('Notification' in window)||Notification.permission!=='granted')return;
+ const ex=expiring();if(ex.length)send('exp'+t,'SmartPantry: validade',ex.slice(0,4).map(p=>p.n).join(', ')+(ex.length>4?'…':'')+' perto de vencer ou vencido(s).');
+ S.meals.filter(m=>m.date===t).forEach(m=>{const [h,mi]=TT[m.type].split(':'),tm=+h*60+ +mi;if(hm>=tm-30&&hm<=tm+60)send('m'+m.id+t,'Hora de preparar: '+m.name,TN[m.type]+' às '+TT[m.type]+' · '+(m.time||0)+' min de preparo.')});
+ Object.keys(S.notified).forEach(k=>{if(!k.includes(t))delete S.notified[k]});if(ch)save()}
+let day=today();render();notify();setInterval(()=>{if(today()!==day){day=today();render()}notify()},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();notify()}});
+})();
+</script>
+</body>
+</html>
