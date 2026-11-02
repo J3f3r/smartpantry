@@ -1,0 +1,24 @@
+{
+  "name": "appwebsmartpantry",
+  "version": "1.0.0",
+  "description": "Planejador de refeições, lista de compras e despensa. Front-end em HTML/JS puro, dados no navegador (localStorage).\r [Demo](https://github.com/J3f3r/smartpantry/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/J3f3r/smartpantry.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/J3f3r/smartpantry/issues"
+  },
+  "homepage": "https://github.com/J3f3r/smartpantry#readme",
+  "devDependencies": {
+    "mocha": "^12.0.3"
+  }
+}
